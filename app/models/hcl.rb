@@ -1,0 +1,2 @@
+class Hcl < Computer
+end

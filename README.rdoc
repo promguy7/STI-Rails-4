@@ -1,0 +1,49 @@
+3.Single table inheritance
+
+http://blog.thirst.co/post/14885390861/rails-single-table-inheritance    
+
+1.rails generate scaffold Computer name:string owner:string type:string manufacturer:string
+2.rails generate model Mac 
+3.rails generate model HCL
+
+class Computer < ActiveRecord::Base
+end
+
+class Hcl < Computer
+end
+
+class Mac < Computer
+before_save :set_man
+  def set_man
+     self.manafacturer = "apple"
+  end
+
+end
+
+QUERIES:
+1.Computer.all
+SELECT "computers".* FROM "computers"
+
+2.Mac.all
+SELECT "computers".* FROM "computers"  WHERE "computers"."type" IN ('Mac')
+
+3.Hcl.all
+SELECT "computers".* FROM "computers"  WHERE "computers"."type" IN ('Hcl')
+
+4.Hcl.find_or_create_by(name: 'Danhcl')
+  SQL (2.0ms)  INSERT INTO "computers" ("created_at", "name", "type", "updated_at") VALUES (?, ?, ?, ?)  [["created_at", "2015-07-02 11:22:20.384043"], ["name", "Danhcl"
+"type", "Hcl"], ["updated_at", "2015-07-02 11:22:20.384043"]]
+
+5.Mac.create(name: 'Johnmac2')
+  SQL (1.0ms)  INSERT INTO "computers" ("created_at", "manufacturer", "name", "type", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", "2015-07-02 11:23:41.431679"],
+manufacturer", "apple"], ["name", "Johnmac2"], ["type", "Mac"], ["updated_at", "2015-07-02 11:23:41.431679"]]
+
+6.Mac.create(name: 'John')
+7.Computer.where(type: "Mac") and  8.Mac.all
+ SAME QUERY FIRED
+.Computer.where(type: "Mac")
+SELECT "computers".* FROM "computers"  WHERE "computers"."type" = 'Mac'
+AND
+Mac.all
+SELECT "computers".* FROM "computers"  WHERE "computers"."type" IN ('Mac')
+
